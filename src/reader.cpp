@@ -3,6 +3,9 @@
 #include <regex>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
+#include <vector>
+#include <utility>
 
 #include "reader.h"
 #include "values.h"
@@ -33,7 +36,6 @@ std::string Reader::peek() {
 std::shared_ptr<MalValue> read_str(std::string code) {
     Reader tokenizer = Reader(code);
 
-
     std::string token = tokenizer.peek();
     while(token != "" && token.at(0) == ';'){
         token = tokenizer.next();
@@ -57,6 +59,10 @@ std::shared_ptr<MalValue> read_form(Reader& tokenizer) {
         throw -1;
     } else if (token == "(") {
         return read_list(tokenizer);
+    } else if (token == "[") {
+        return read_vector(tokenizer);
+    } else if (token == "{") {
+        return read_hashmap(tokenizer);
     } else {
         return read_atom(tokenizer);
     }
@@ -76,6 +82,63 @@ std::shared_ptr<MalValue> read_list(Reader& tokenizer) {
     }
 }
 
+std::shared_ptr<MalValue> read_vector(Reader& tokenizer) {
+    std::vector<std::shared_ptr<MalValue>> values;
+    for (;;) {
+        std::string token = tokenizer.next();
+        if (token == "") {
+            throw -1;
+        } else if (token == "]") {
+            return std::shared_ptr<MalVector>(new MalVector(values));
+        } else {
+            values.push_back(read_form(tokenizer));
+        }
+    }
+}
+
+std::shared_ptr<MalValue> read_hashmap(Reader& tokenizer) {
+    std::unordered_map<MalHashKey, std::shared_ptr<MalValue>> values;
+    for (;;) {
+        std::string token = tokenizer.next();
+
+        if (token == "") {
+            throw -1;
+        } else if (token == "}") {
+            return std::shared_ptr<MalHashMap>(new MalHashMap(values));
+        } else {
+            std::shared_ptr<MalValue> key = read_form(tokenizer);
+            MalValueKind kind = key->get_kind();
+            switch(kind) {
+                case MalValueKind::Symbol:
+                case MalValueKind::Number:
+                case MalValueKind::Double:
+                case MalValueKind::Boolean:
+                case MalValueKind::Nil:
+                case MalValueKind::String:
+                case MalValueKind::Keyword:
+                    {
+                        MalHashKey hkey = MalHashKey(kind, key->to_string());
+                        std::string token = tokenizer.next();
+                        if (token == "") {
+                            throw -1;
+                        } else if (token == "}") {
+                            throw -2;
+                        } else {
+                            std::shared_ptr<MalValue> value = read_form(tokenizer);
+                            values[hkey] = value;
+                        }
+                        break;
+                    }
+                default:
+                    // Only the above types are supported for now
+                    throw -1;
+                    break;
+            }
+        }
+        
+    }
+}
+
 std::shared_ptr<MalValue> read_atom(Reader& tokenizer) {
     std::string token = tokenizer.peek();
     if (token == "true") {
@@ -90,6 +153,8 @@ std::shared_ptr<MalValue> read_atom(Reader& tokenizer) {
         return std::shared_ptr<MalDouble>(new MalDouble(std::stold(token)));
     } else if (std::regex_match(token, string_regex)) {
         return std::shared_ptr<MalString>(new MalString(token.substr(1, token.length() - 2)));
+    } else if (token.at(0) == ':') {
+        return std::shared_ptr<MalKeyword>(new MalKeyword(token));
     } else {
         return std::shared_ptr<MalSymbol>(new MalSymbol(token));
     }
