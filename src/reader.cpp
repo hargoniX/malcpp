@@ -33,6 +33,12 @@ std::string Reader::peek() {
 std::shared_ptr<MalValue> read_str(std::string code) {
     Reader tokenizer = Reader(code);
 
+
+    std::string token = tokenizer.peek();
+    while(token != "" && token.at(0) == ';'){
+        token = tokenizer.next();
+    }
+
     if (tokenizer.peek() == "") {
         return std::shared_ptr<MalNil>(new MalNil());
     }
