@@ -8,4 +8,6 @@ add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 
 target_include_directories(mal PRIVATE include)
-target_sources(mal PRIVATE src/mal.cpp src/reader.cpp src/values.cpp)
+target_sources(mal PRIVATE
+  src/mal.cpp src/reader.cpp src/values.cpp src/environment.cpp
+  src/operations.cpp src/eval.cpp)

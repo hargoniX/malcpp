@@ -5,6 +5,10 @@ MalValueKind MalValue::get_kind() {
     return kind;
 }
 
+std::vector<std::shared_ptr<MalValue>> MalList::to_list() {
+    return list;
+}
+
 std::string MalList::to_string() {
     std::string ret = "(";
     for (auto i = list.begin(); i != list.end(); ++i) {
@@ -22,8 +26,16 @@ std::string MalSymbol::to_string() {
     return name;
 }
 
+long long MalNumber::to_ll() {
+    return value;
+}
+
 std::string MalNumber::to_string() {
     return std::to_string(value);
+}
+
+long double MalDouble::to_ld() {
+    return value;
 }
 
 std::string MalDouble::to_string() {
@@ -51,6 +63,10 @@ std::string MalKeyword::to_string() {
     return value;
 }
 
+std::vector<std::shared_ptr<MalValue>> MalVector::to_list() {
+    return list;
+}
+
 std::string MalVector::to_string() {
     std::string ret = "[";
     for (auto i = list.begin(); i != list.end(); ++i) {
@@ -75,6 +91,9 @@ bool MalHashKey::operator==(const MalHashKey& other) const {
     return repr == other.repr && kind == other.kind;
 }
 
+std::unordered_map<MalHashKey, std::shared_ptr<MalValue>> MalHashMap::to_hashmap() {
+    return map;
+}
 
 std::string MalHashMap::to_string() {
     std::string ret = "{ ";
@@ -88,4 +107,12 @@ std::string MalHashMap::to_string() {
 
     ret += "}";
     return ret;
+}
+
+std::shared_ptr<MalValue> MalFunction::call(std::vector<std::shared_ptr<MalValue>> args) {
+    return fun(args);
+}
+
+std::string MalFunction::to_string() {
+    return "#<function>";
 }
