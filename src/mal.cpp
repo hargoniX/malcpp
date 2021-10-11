@@ -16,12 +16,12 @@ std::string print(std::shared_ptr<MalValue> value) {
     return value->to_string();
 }
 
-std::string rep(std::string code, Environment& env) {
+std::string rep(std::string code, std::shared_ptr<Environment> env) {
     return print(eval(read(code), env));
 }
 
 int main () {
-    Environment env = Environment();
+    std::shared_ptr<Environment> env = std::shared_ptr<Environment>(new Environment());
     while(true) {
         std::cout << "mal> ";
         std::string code{};

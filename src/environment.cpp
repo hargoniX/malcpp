@@ -11,10 +11,24 @@ Environment::Environment() {
     this->env["/"] = std::shared_ptr<MalFunction>(new MalFunction(mal_division));
 }
 
+Environment::Environment(std::shared_ptr<Environment> upper) {
+    this->upper = upper;
+    Environment();
+}
+
 std::shared_ptr<MalValue> Environment::get_symbol(std::string symbol) {
     std::shared_ptr<MalValue> val = env[symbol];
     if (val == nullptr) {
-        throw -1;
+        if (upper == nullptr) {
+            throw -1;
+        } else {
+            return upper->get_symbol(symbol);
+        }
+    } else {
+        return val;
     }
-    return val;
+}
+
+void Environment::set_symbol(std::string symbol, std::shared_ptr<MalValue> val) {
+    env[symbol] = val;
 }

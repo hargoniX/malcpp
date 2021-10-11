@@ -2,9 +2,10 @@
 #include <vector>
 #include "values.h"
 #include "operations.h"
+#include "environment.h"
 
 // TOOD: Auto type conversion can be done here for double and int
-std::shared_ptr<MalValue> mal_addition(std::vector<std::shared_ptr<MalValue>> args) {
+std::shared_ptr<MalValue> mal_addition(std::vector<std::shared_ptr<MalValue>> args, std::shared_ptr<Environment> env) {
     if(args.size() != 2) {
         throw -1;
     }
@@ -30,7 +31,7 @@ std::shared_ptr<MalValue> mal_addition(std::vector<std::shared_ptr<MalValue>> ar
     }
 }
 
-std::shared_ptr<MalValue> mal_subtraction(std::vector<std::shared_ptr<MalValue>> args) {
+std::shared_ptr<MalValue> mal_subtraction(std::vector<std::shared_ptr<MalValue>> args, std::shared_ptr<Environment> env) {
     if(args.size() != 2) {
         throw -1;
     }
@@ -56,7 +57,7 @@ std::shared_ptr<MalValue> mal_subtraction(std::vector<std::shared_ptr<MalValue>>
     }
 }
 
-std::shared_ptr<MalValue> mal_multiplication(std::vector<std::shared_ptr<MalValue>> args) {
+std::shared_ptr<MalValue> mal_multiplication(std::vector<std::shared_ptr<MalValue>> args, std::shared_ptr<Environment> env) {
     if(args.size() != 2) {
         throw -1;
     }
@@ -82,7 +83,7 @@ std::shared_ptr<MalValue> mal_multiplication(std::vector<std::shared_ptr<MalValu
     }
 }
 
-std::shared_ptr<MalValue> mal_division(std::vector<std::shared_ptr<MalValue>> args) {
+std::shared_ptr<MalValue> mal_division(std::vector<std::shared_ptr<MalValue>> args, std::shared_ptr<Environment> env) {
     if(args.size() != 2) {
         throw -1;
     }

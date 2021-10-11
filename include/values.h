@@ -8,6 +8,9 @@
 #include <utility>
 #include <functional>
 
+// Defined in "environment.h"
+class Environment;
+
 enum MalValueKind {
     List,
     Symbol,
@@ -55,7 +58,7 @@ public:
     virtual long long to_ll() { throw -1; };
     virtual long double to_ld() { throw -1; };
     virtual std::vector<std::shared_ptr<MalValue>> to_list() { throw -1; };
-    virtual std::shared_ptr<MalValue> call(std::vector<std::shared_ptr<MalValue>>) { throw -1; };
+    virtual std::shared_ptr<MalValue> call(std::vector<std::shared_ptr<MalValue>>, std::shared_ptr<Environment>) { throw -1; };
     virtual std::unordered_map<MalHashKey, std::shared_ptr<MalValue>> to_hashmap() { throw -1; };
     MalValue(MalValueKind kind) : kind { kind } {}
 private:
@@ -160,11 +163,11 @@ private:
 class MalFunction : public MalValue
 {
 public:
-    MalFunction(std::function<std::shared_ptr<MalValue>(std::vector<std::shared_ptr<MalValue>>)> value) : MalValue(MalValueKind::Function), fun { value} {}
-    std::shared_ptr<MalValue> call(std::vector<std::shared_ptr<MalValue>>);
+    MalFunction(std::function<std::shared_ptr<MalValue>(std::vector<std::shared_ptr<MalValue>>, std::shared_ptr<Environment>)> value) : MalValue(MalValueKind::Function), fun { value } {}
+    std::shared_ptr<MalValue> call(std::vector<std::shared_ptr<MalValue>>, std::shared_ptr<Environment>);
     std::string to_string();
 private:
-    std::function<std::shared_ptr<MalValue>(std::vector<std::shared_ptr<MalValue>>)> fun;
+    std::function<std::shared_ptr<MalValue>(std::vector<std::shared_ptr<MalValue>>, std::shared_ptr<Environment>)> fun;
 };
 
 #endif /* MAL_VALUES_H */

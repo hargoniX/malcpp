@@ -1,5 +1,6 @@
 #include <string>
 #include "values.h"
+#include "environment.h"
 
 MalValueKind MalValue::get_kind() {
     return kind;
@@ -109,8 +110,8 @@ std::string MalHashMap::to_string() {
     return ret;
 }
 
-std::shared_ptr<MalValue> MalFunction::call(std::vector<std::shared_ptr<MalValue>> args) {
-    return fun(args);
+std::shared_ptr<MalValue> MalFunction::call(std::vector<std::shared_ptr<MalValue>> args, std::shared_ptr<Environment> env) {
+    return fun(args, env);
 }
 
 std::string MalFunction::to_string() {
